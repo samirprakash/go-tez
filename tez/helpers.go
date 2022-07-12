@@ -12,3 +12,14 @@ func (t *Tez) CreateDirIfNotExist(p string) error {
 	}
 	return nil
 }
+
+func (t *Tez) CreateFileIfNotExist(p string) error {
+	if _, err := os.Stat(p); os.IsNotExist(err) {
+		f, err := os.Create(p)
+		if err != nil {
+			return err
+		}
+		f.Close()
+	}
+	return nil
+}

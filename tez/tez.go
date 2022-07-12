@@ -1,5 +1,7 @@
 package tez
 
+import "github.com/joho/godotenv"
+
 const version = "1.0.0"
 
 type Tez struct {
@@ -14,7 +16,20 @@ func (t *Tez) New(p string) error {
 		folderNames: []string{"handlers", "migrations", "views", "data", "public", "tmp", "logs", "middleware"},
 	}
 
+	// init folders
 	err := t.Init(pathConfig)
+	if err != nil {
+		return err
+	}
+
+	// check if .env file exists
+	err = t.checkDotEnv(p)
+	if err != nil {
+		return err
+	}
+
+	// read .env file
+	err = godotenv.Load(p + "/.env")
 	if err != nil {
 		return err
 	}
@@ -25,11 +40,18 @@ func (t *Tez) New(p string) error {
 func (t *Tez) Init(ip initPaths) error {
 	root := ip.rootPath
 	for _, p := range ip.folderNames {
-		// crate folder if it doesn't exist
 		err := t.CreateDirIfNotExist(root + "/" + p)
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (t *Tez) checkDotEnv(p string) error {
+	err := t.CreateFileIfNotExist(p + "/.env")
+	if err != nil {
+		return err
 	}
 	return nil
 }
